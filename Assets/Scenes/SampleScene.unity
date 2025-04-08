@@ -1237,7 +1237,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
-  bounceLayer: {fileID: 0}
+  bounceLayer:
+    serializedVersion: 2
+    m_Bits: 0
   groundCheckSize: 0.1
   jumpForce: 5
   bounceForce: 10

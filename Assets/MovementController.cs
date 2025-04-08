@@ -6,7 +6,7 @@ public class Movement : MonoBehaviour
 {
     private Rigidbody rb;
     private bool jumpRequested;
-    private FloatField targetHorizontalSpeed;
+    private float targetHorizontalSpeed;
     [Header("Groud Detection")]
     [SerializeField] private Transform groundCheckTransform;
     [SerializeField] private LayerMask groundLayer;
