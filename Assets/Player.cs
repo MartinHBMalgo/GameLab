@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
     // Om vi är på bouncy - Studsa.
     if (isOnBouncy)
     {
-    rb.velocity = new Vector3(rb.velocity.x, 0, 0); // Clear vertical velocity
+    rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, 0); // Clear vertical velocity
     rb.AddForce(Vector3.up * bounceForce, ForceMode.VelocityChange);
     }
     else if (spacePressed && isGrounded)
@@ -65,7 +65,7 @@ public class Player : MonoBehaviour
     }
 
     //Apply Horizontal inputs
-    rb.velocity = new Vector3(horizontalInput, rb.velocity.y, 0);
+    rb.linearVelocity = new Vector3(horizontalInput, rb.linearVelocity.y, 0);
 }
 
     private void OnDrawGizmos() {
