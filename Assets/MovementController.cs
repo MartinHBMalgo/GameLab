@@ -10,7 +10,7 @@ public class Movement : MonoBehaviour
     [Header("Groud Detection")]
     [SerializeField] private Transform groundCheckTransform;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private Transform bounceLayer;
+    [SerializeField] private LayerMask bounceLayer;
     [SerializeField] private float groundCheckSize = 0.1f;
     [Header("Movement Parameters")]
     [SerializeField] private float jumpForce = 5f;
@@ -19,7 +19,11 @@ public class Movement : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody>();
+        if (groundCheckTransform == null)
+        {
+            groundCheckTransform = transform.Find("GroundCheckTransform");
+        }
     }
 
     // Update is called once per frame
