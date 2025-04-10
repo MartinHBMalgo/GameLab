@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class Movement : MonoBehaviour
+public class MovementController : MonoBehaviour
 {
     private Rigidbody rb;
     private bool jumpRequested;
