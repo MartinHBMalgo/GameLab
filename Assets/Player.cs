@@ -20,7 +20,8 @@ public class Player : MonoBehaviour
     void Update()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
-        movement.Move(horizontalInput);
+        float depthInput = Input.GetAxis("Vertical");
+        movement.Move(horizontalInput, depthInput);
 
         if (Input.GetKeyDown(KeyCode.Space))
         {

@@ -7,6 +7,8 @@ public class MovementController : MonoBehaviour
     private Rigidbody rb;
     private bool jumpRequested;
     private float targetHorizontalSpeed;
+    private float targetDepthSpeed;
+
     [Header("Groud Detection")]
     [SerializeField] private Transform groundCheckTransform;
     [SerializeField] private LayerMask groundLayer;
@@ -26,9 +28,10 @@ public class MovementController : MonoBehaviour
         }
     }
 
-    public void Move(float horizontalInput)
+    public void Move(float horizontalInput, float depthInput)
     {
         targetHorizontalSpeed = horizontalInput * moveSpeed;
+        targetDepthSpeed = depthInput * moveSpeed;
     }
 
     public void RequestJump()
@@ -38,7 +41,7 @@ public class MovementController : MonoBehaviour
 
     void FixedUpdate()
     {
-        rb.linearVelocity = new Vector3(targetHorizontalSpeed, rb.linearVelocity.y, 0);
+        rb.linearVelocity = new Vector3(targetHorizontalSpeed, rb.linearVelocity.y, targetDepthSpeed);
         bool isGrounded = Physics.OverlapSphere(groundCheckTransform.position, groundCheckSize, groundLayer).Length > 0;
         bool isOnBouncy = Physics.OverlapSphere(groundCheckTransform.position, groundCheckSize, bounceLayer).Length > 0;
 
@@ -46,7 +49,7 @@ public class MovementController : MonoBehaviour
         // Om vi är på bouncy - Studsa.
         if (isOnBouncy)
         {
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, 0); // Clear vertical velocity
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z); // Clear vertical velocity
             rb.AddForce(Vector3.up * bounceForce, ForceMode.VelocityChange);
         }
         else if (jumpRequested && isGrounded)
