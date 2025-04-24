@@ -54,7 +54,7 @@ public class MovementController : MonoBehaviour
         }
         else if (jumpRequested && isGrounded)
         {
-            rb.AddForce(new Vector3(0, 5f, 0), ForceMode.VelocityChange);
+            rb.AddForce(new Vector3(0, jumpForce, 0), ForceMode.VelocityChange);
             jumpRequested = false;
         }
         // If we're in the air and space was pressed, clear the flag
