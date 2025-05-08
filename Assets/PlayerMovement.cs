@@ -3,20 +3,35 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private PlayerInput playerInput;
-    private InputAction moveAction;
+    public Transform orientation;
+    private Rigidbody rb;
+
+    private PlayerInputActions playerControls;
+    private InputAction move;
 
     [Header("Movement")]
     public float moveSpeed;
 
-    public Transform orientation;
+    private float horizontalInput;
+    private float verticalInput;
+    private Vector3 moveDirection = Vector3.zero;
+    
 
-    float horizontalInput;
-    float verticalInput;
+    private void Awake()
+    {
+        playerControls = new PlayerInputActions();
+    }
 
-    Vector3 moveDirection;
+    private void OnEnable()
+    {
+        move = playerControls.Player.Move;
+        move.Enable();
+    }
 
-    Rigidbody rb;
+    private void OnDisable()
+    {
+        move.Disable();
+    }
 
     private void Start()
     {
@@ -36,16 +51,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void MyInput()
     {
-        Vector2 moveInput = moveAction.ReadValue<Vector2>();
-        horizontalInput = moveInput.x;
-        verticalInput = moveInput.y;
+        Vector2 inputVector = move.ReadValue<Vector2>();
+
+        horizontalInput = inputVector.x;
+        verticalInput = inputVector.y;
     }
 
     private void MovePlayer()
     {
-        // calculate movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-
         rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
     }
 }
