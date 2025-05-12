@@ -1505,6 +1505,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   orientation: {fileID: 804230250}
   moveSpeed: 3
+  groundDrag: 3
+  jumpForce: 6
+  jumpCooldown: 0.25
+  airMultiplier: 0.4
+  playerHeight: 1
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!4 &1997046327 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4358077784609184775, guid: a2298a9f9a4960d488e2d0650ddd0ac9, type: 3}
