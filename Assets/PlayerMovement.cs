@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,22 +7,44 @@ public class PlayerMovement : MonoBehaviour
     public Transform orientation;
     private Rigidbody rb;
 
+    public MovementState state;
+    public enum MovementState
+    {
+        walking,
+        sprinting,
+        crouching,
+        air
+    }
+
     private PlayerInputActions playerControls;
     private InputAction move;
     private InputAction jump;
+    private InputAction sprint;
+    private InputAction crouch;
+
 
     [Header("Movement")]
-    public float moveSpeed;
+    private float moveSpeed;
+    public float walkSpeed;
+    public float sprintSpeed;
     public float groundDrag;
+
+    [Header("Jumping")]
     public float jumpForce;
     public float jumpCooldown;
     public float airMultiplier;
     private bool readyToJump;
 
+    [Header("Crouching")]
+    public float crouchSpeed;
+    public float crouchYScale;
+    private float startYScale;
+
+
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatIsGround;
-    bool grounded;
+    private bool grounded;
 
     private float horizontalInput;
     private float verticalInput;
@@ -37,21 +60,30 @@ public class PlayerMovement : MonoBehaviour
     {
         move = playerControls.Player.Move;
         jump = playerControls.Player.Jump;
+        sprint = playerControls.Player.Sprint;
+        crouch = playerControls.Player.Crouch;
         move.Enable();
         jump.Enable();
+        sprint.Enable();
+        crouch.Enable();
     }
 
     private void OnDisable()
     {
         move.Disable();
         jump.Disable();
+        sprint.Disable();
+        crouch.Disable();
     }
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+
         readyToJump = true;
+
+        startYScale = transform.localScale.y;
     }
 
     private void Update()
@@ -60,6 +92,7 @@ public class PlayerMovement : MonoBehaviour
 
         MyInput();
         SpeedControl();
+        StateHandler();
 
         if (grounded)
         {
@@ -84,11 +117,59 @@ public class PlayerMovement : MonoBehaviour
         horizontalInput = inputVector.x;
         verticalInput = inputVector.y;
 
+        //  when to jump
         if (jumpPressed && readyToJump && grounded)
         {
             readyToJump = false;
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
+        }
+
+        // start crouch
+        if (crouch.triggered && grounded)
+        {
+            transform.localScale = new Vector3(transform.localScale.x, startYScale * crouchYScale, transform.localScale.z);
+            rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+        }
+        else if (crouch.triggered)
+        {
+            transform.localScale = new Vector3(transform.localScale.x, startYScale * crouchYScale, transform.localScale.z);
+        }
+        if (crouch.phase == InputActionPhase.Canceled)
+        {
+            transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+        }
+    }
+
+    private void StateHandler()
+    {
+        bool crouchPressed = crouch.ReadValue<float>() > 0.5f;
+        bool sprintPressed = sprint.ReadValue<float>() > 0.5f;
+        // Mode - Sprinting
+        if (grounded && crouchPressed)
+        {
+            state = MovementState.crouching;
+            moveSpeed = crouchSpeed;
+        }
+
+        // Mode - Sprinting
+        else if (grounded && sprintPressed)
+        {
+            state = MovementState.sprinting;
+            moveSpeed = sprintSpeed;
+        }
+
+        // Mode - Walking
+        else if (grounded)
+        {
+            state = MovementState.walking;
+            moveSpeed = walkSpeed;
+        }
+
+        // Mode - Air
+        else
+        {
+            state = MovementState.air;
         }
     }
 
