@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -46,9 +47,14 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask whatIsGround;
     private bool grounded;
 
+    [Header("Slope Handling")]
+    public float maxSlopeAngle;
+    private RaycastHit slopeHit;
+
     private float horizontalInput;
     private float verticalInput;
     private Vector3 moveDirection = Vector3.zero;
+    private bool isCrouching;
     
 
     private void Awake()
@@ -82,13 +88,16 @@ public class PlayerMovement : MonoBehaviour
         rb.freezeRotation = true;
 
         readyToJump = true;
+        isCrouching = false;
 
         startYScale = transform.localScale.y;
     }
 
     private void Update()
     {
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f, whatIsGround);
+        float effectivePlayerHeight = playerHeight * (transform.localScale.y / startYScale);
+
+        grounded = Physics.Raycast(transform.position, Vector3.down, effectivePlayerHeight * 0.5f, whatIsGround);
 
         MyInput();
         SpeedControl();
@@ -113,6 +122,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 inputVector = move.ReadValue<Vector2>();
         bool jumpPressed = jump.ReadValue<float>() > 0.5f;
+        bool crouchPressed = crouch.ReadValue<float>() > 0.5f;
 
         horizontalInput = inputVector.x;
         verticalInput = inputVector.y;
@@ -125,28 +135,30 @@ public class PlayerMovement : MonoBehaviour
             Invoke(nameof(ResetJump), jumpCooldown);
         }
 
-        // start crouch
-        if (crouch.triggered && grounded)
+        // crouch handling
+        if (crouchPressed && grounded && !isCrouching)
         {
+            isCrouching = true;
             transform.localScale = new Vector3(transform.localScale.x, startYScale * crouchYScale, transform.localScale.z);
             rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
         }
-        else if (crouch.triggered)
+        else if (crouchPressed && !grounded && !isCrouching)
         {
+            isCrouching = true;
             transform.localScale = new Vector3(transform.localScale.x, startYScale * crouchYScale, transform.localScale.z);
         }
-        if (crouch.phase == InputActionPhase.Canceled)
+        else if (!crouchPressed && isCrouching)
         {
+            isCrouching = false;
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
         }
     }
 
     private void StateHandler()
     {
-        bool crouchPressed = crouch.ReadValue<float>() > 0.5f;
         bool sprintPressed = sprint.ReadValue<float>() > 0.5f;
         // Mode - Sprinting
-        if (grounded && crouchPressed)
+        if (grounded && isCrouching)
         {
             state = MovementState.crouching;
             moveSpeed = crouchSpeed;
@@ -208,5 +220,17 @@ public class PlayerMovement : MonoBehaviour
     private void ResetJump()
     {
         readyToJump = true;
+    }
+
+    private bool OnSlope()
+    {
+        float effectivePlayerHeight = playerHeight * (transform.localScale.y / startYScale);
+
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, effectivePlayerHeight * 0.5f + 0.3f))
+        {
+            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            return angle < maxSlopeAngle && angle != 0;
+        }
+        return false;
     }
 }

@@ -328,6 +328,7 @@ GameObject:
   - component: {fileID: 266329807}
   - component: {fileID: 266329806}
   - component: {fileID: 266329805}
+  - component: {fileID: 266329808}
   m_Layer: 0
   m_Name: PlayerCam
   m_TagString: Untagged
@@ -424,6 +425,19 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &266329808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 266329803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ab572481b25a804382a61e315e90cd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraPosition: {fileID: 804230250}
 --- !u!1001 &292917993
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1334,7 +1348,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1718144786}
-  - component: {fileID: 1718144785}
   m_Layer: 0
   m_Name: CameraHolder
   m_TagString: Untagged
@@ -1342,19 +1355,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1718144785
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1718144784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ab572481b25a804382a61e315e90cd9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraPosition: {fileID: 804230250}
 --- !u!4 &1718144786
 Transform:
   m_ObjectHideFlags: 0
@@ -1504,11 +1504,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orientation: {fileID: 804230250}
-  moveSpeed: 3
-  groundDrag: 3
+  state: 0
+  walkSpeed: 3
+  sprintSpeed: 6
+  groundDrag: 2
   jumpForce: 6
-  jumpCooldown: 0.25
+  jumpCooldown: 0.5
   airMultiplier: 0.4
+  crouchSpeed: 1.5
+  crouchYScale: 0.25
   playerHeight: 1
   whatIsGround:
     serializedVersion: 2
